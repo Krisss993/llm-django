@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Chat Page{% endblock %}
+
+{% block content %}
+    <div id="chat-box"></div>
+    <form id="chat-form">
+        <input type="text" id="message-input" autocomplete="off" placeholder="Type your message...">
+        <button type="submit">Send</button>
+    </form>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const chatForm = document.getElementById('chat-form');
+        const messageInput = document.getElementById('message-input');
+
+        const ws = new WebSocket('wss://' + window.location.host + '/wx/chat/');
+
+        ws.onopen = function(e) {
+            console.log('WebSocket connection opened');
+        };
+
+        ws.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+
+            if (data.event === 'on_parser_start') {
+                // Create a new <p> element for the new server message
+                messageElement = document.createElement('p');
+                messageElement.className = 'server-message'; // Class for server messages
+                chatBox.appendChild(messageElement);
+            } 
+
+            if (data.event === 'on_parser_stream') {
+                if (messageElement) {
+                    messageElement.innerText += data.data.chunk; // Append new chunk
+                }
+            }
+        };
+
+        ws.onerror = function(e) {
+            console.error('WebSocket error:', e);
+        };
+
+        ws.onclose = function(e) {
+            console.log('WebSocket connection closed');
+        };
+
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = messageInput.value;
+
+            // Display the user message in the chat box
+            const userMessageElement = document.createElement('p');
+            userMessageElement.className = 'user-message'; // Class for user messages
+            userMessageElement.innerText = message;
+            chatBox.appendChild(userMessageElement);
+
+            // Send the message to the server
+            ws.send(JSON.stringify({'message': message}));
+            messageInput.value = '';
+        });
+    </script>
+{% endblock %}

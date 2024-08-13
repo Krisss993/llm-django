@@ -1,0 +1,37 @@
+<!-- base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My App{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Options</h2>
+            <!-- Add links or buttons for the toolbar here -->
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Navbar -->
+            <div class="navbar">
+                {% block navbar %}
+                <!-- Future navbar content goes here -->
+                {% endblock %}
+            </div>
+
+            <!-- Page Content -->
+            <div class="content">
+                {% block content %}
+                <!-- Page-specific content goes here -->
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
